@@ -4,9 +4,8 @@ import { View, Button, StyleSheet, Text } from "react-native";
 const GameSelection = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose Game Mode</Text>
-      <Button title="Play Against AI" onPress={() => navigation.navigate("CheckerGame", { gameMode: "AI" })} />
-      <Button title="Play Against a Friend" onPress={() => navigation.navigate("CheckerGame", { gameMode: "Multiplayer" })} />
+      <Text style={styles.title}>Choose Game</Text>
+      <Button title="Checkers" onPress={() => navigation.navigate("GameModeSelection")} />
     </View>
   );
 };

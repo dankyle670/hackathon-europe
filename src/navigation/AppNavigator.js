@@ -8,6 +8,8 @@ import RegisterScreen from "../screen/RegisterScreen";
 import DashboardScreen from "../screen/DashboardScreen";
 import AddFriendScreen from "../screen/AddFriendScreen";
 import GameSelection from "../screen/GameSelection";
+import GameModeSelection from "../screen/GameModeSelection";
+import InviteFriendScreen from "../screen/InviteFriendScreen";
 import CheckerGame from "../screen/CheckerGame";
 
 import { Provider as PaperProvider } from "react-native-paper";
@@ -27,8 +29,9 @@ const AppNavigator = () => {
         <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ gestureEnabled: false }} />
         <Stack.Screen name="AddFriendScreen" component={AddFriendScreen}/>
         <Stack.Screen name="GameSelection" component={GameSelection} />
-        <Stack.Screen name="CheckerGame" component={CheckerGame} />
-
+        <Stack.Screen name="GameModeSelection" component={GameModeSelection} />
+        <Stack.Screen name="InviteFriendScreen" component={InviteFriendScreen}/>
+        <Stack.Screen name="CheckerGame" component={CheckerGame}/>
       </Stack.Navigator>
     </NavigationContainer>
     </PaperProvider>

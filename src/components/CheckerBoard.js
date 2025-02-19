@@ -155,7 +155,6 @@ const CheckerBoard = ({ gameMode }) => {
       setBoard(newBoard);
       checkWinCondition(newBoard);
     }
-
     setPlayerTurn(true);
   }
 

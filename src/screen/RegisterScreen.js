@@ -19,7 +19,7 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
+    <View style={{ padding: 50 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>Register</Text>
       <TextInput placeholder="First Name" value={first_name} onChangeText={setFirstName} style={{ borderWidth: 1, padding: 8, marginBottom: 10 }} />
       <TextInput placeholder="Last Name" value={last_name} onChangeText={setLastName} style={{ borderWidth: 1, padding: 8, marginBottom: 10 }} />

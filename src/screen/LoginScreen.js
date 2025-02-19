@@ -18,7 +18,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
+    <View style={{ padding: 50 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>Login</Text>
       <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={{ borderWidth: 1, padding: 8, marginBottom: 10 }} />
       <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry style={{ borderWidth: 1, padding: 8, marginBottom: 10 }} />
