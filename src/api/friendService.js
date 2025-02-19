@@ -83,3 +83,57 @@ export const getPendingRequests = async () => {
     throw error.response?.data || { message: "Failed to fetch pending requests" };
   }
 };
+
+// Fetch All Users (To Send Friend Requests)
+export const getAllUsers = async () => {
+  try {
+    const token = await getAuthToken();
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${API_URL}/users`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    console.log("Users fetched:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Fetch Users Error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Failed to fetch users" };
+  }
+};
+
+//  Fetch Pending Friend Requests Count
+export const getPendingRequestsCount = async () => {
+  try {
+    const token = await getAuthToken();
+    if (!token) throw { message: "No token found" };
+
+    const response = await axios.get(`${API_URL}/friend-requests/pending`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data.count; // Returns the count of pending requests
+  } catch (error) {
+    console.error("Pending Requests Count Error:", error.response?.data || error.message);
+    return 0; // Return 0 if there's an error
+  }
+};
+
+export const rejectFriendRequest = async (requestId) => {
+  try {
+    const token = await getAuthToken();
+    if (!token) throw { message: "No token found" };
+
+    const response = await axios.put(
+      `${API_URL}/friend-request/${requestId}/reject`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    console.log("Friend request rejected:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Reject Request Error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Failed to reject friend request" };
+  }
+};
