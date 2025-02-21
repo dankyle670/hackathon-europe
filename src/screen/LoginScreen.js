@@ -1,3 +1,4 @@
+// src/screens/Login.js
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,9 +11,15 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       const response = await loginUser({ email, password });
+
+      // ✅ Save Token and User ID in AsyncStorage
       await AsyncStorage.setItem("token", response.token);
+      await AsyncStorage.setItem("userId", response.userId);  // Save userId here
+
+      console.log("✅ User ID saved:", response.userId);
       navigation.navigate("Dashboard");
     } catch (error) {
+      console.error("❌ Login Error:", error);
       Alert.alert("Login Failed", "Invalid email or password");
     }
   };

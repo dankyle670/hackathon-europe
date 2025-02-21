@@ -8,7 +8,8 @@ const getAuthToken = async () => {
   return await AsyncStorage.getItem("token");
 };
 
-// Register User
+// src/api/authService.js
+
 export const registerUser = async (userData) => {
   try {
     const response = await axios.post(`${API_URL}/signup`, userData);
@@ -17,6 +18,10 @@ export const registerUser = async (userData) => {
     if (response.data.token) {
       await AsyncStorage.setItem("token", response.data.token);
     }
+    if (response.data.userId) {
+      await AsyncStorage.setItem("userId", response.data.userId);
+      console.log("User ID saved:", response.data.userId);
+    }
 
     return response.data;
   } catch (error) {
@@ -24,6 +29,9 @@ export const registerUser = async (userData) => {
     throw error.response?.data || { message: "Signup failed" };
   }
 };
+
+
+// src/api/authService.js
 
 // Login User
 export const loginUser = async (credentials) => {
@@ -35,12 +43,18 @@ export const loginUser = async (credentials) => {
       await AsyncStorage.setItem("token", response.data.token);
     }
 
+    if (response.data.userId) {
+      await AsyncStorage.setItem("userId", response.data.userId);  // ✅ Save userId here
+      console.log("✅ User ID saved:", response.data.userId);
+    }
+
     return response.data;
   } catch (error) {
     console.error("Login Error:", error.response?.data || error.message);
     throw error.response?.data || { message: "Login failed" };
   }
 };
+
 
 // Fetch User Profile
 export const getUserProfile = async () => {

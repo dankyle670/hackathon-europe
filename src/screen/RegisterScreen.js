@@ -1,3 +1,4 @@
+// src/screens/Register.js
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert } from "react-native";
 import { registerUser } from "../api/authService";
@@ -12,8 +13,11 @@ const RegisterScreen = ({ navigation }) => {
     try {
       const response = await registerUser({ first_name, last_name, email, password });
       Alert.alert("Success", response.message);
+
+      // ✅ Navigate to Login
       navigation.navigate("Login");
     } catch (error) {
+      console.error("❌ Registration Error:", error);
       Alert.alert("Registration Failed", "Try again with different credentials.");
     }
   };
