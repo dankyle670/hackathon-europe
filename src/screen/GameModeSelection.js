@@ -1,38 +1,62 @@
-// src/screens/GameModeSelection.js
 import React from "react";
-import { View, Button, StyleSheet, Text } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 const GameModeSelection = ({ navigation, route }) => {
   const { gameType } = route.params;
 
   const handleModeSelection = (mode) => {
     if (gameType === "Checkers") {
-      if (mode === "AI") {
-        navigation.navigate("CheckerGame", { gameMode: "AI" });
-      } else {
-        navigation.navigate("InviteFriendScreen", { gameType: "Checkers" });
-      }
+      navigation.navigate(mode === "AI" ? "CheckerGame" : "InviteFriendScreen", { gameType });
     } else if (gameType === "SnakeLadders") {
-      if (mode === "AI") {
-        navigation.navigate("SnakeLaddersGame", { gameMode: "AI" });
-      } else {
-        navigation.navigate("InviteFriendScreen", { gameType: "SnakeLadders" });
-      }
+      navigation.navigate(mode === "AI" ? "SnakeLaddersGame" : "InviteFriendScreen", { gameType });
     }
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient colors={["#ff7eb3", "#ff758c"]} style={styles.container}>
       <Text style={styles.title}>Choose Mode for {gameType}</Text>
-      <Button title="Play Against AI" onPress={() => handleModeSelection("AI")} />
-      <Button title="Play Against a Friend" onPress={() => handleModeSelection("Multiplayer")} />
-    </View>
+
+      <TouchableOpacity style={styles.button} onPress={() => handleModeSelection("AI")}>
+        <Text style={styles.buttonText}>🤖 Play Against AI</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => handleModeSelection("Multiplayer")}>
+        <Text style={styles.buttonText}>👥 Play With a Friend</Text>
+      </TouchableOpacity>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#FFF",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  button: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.5)",
+    marginVertical: 10,
+    width: 250,
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 18,
+    color: "#FFF",
+    fontWeight: "bold",
+  },
 });
 
 export default GameModeSelection;
