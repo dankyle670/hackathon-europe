@@ -15,6 +15,7 @@
     "@react-navigation/stack": "^7.1.1",
     "axios": "^1.7.9",
     "expo": "~52.0.35",
+    "expo-linear-gradient": "~14.0.2",
     "expo-notifications": "^0.29.13",
     "expo-status-bar": "~2.0.1",
     "random": "^5.1.1",
@@ -22,12 +23,15 @@
     "react-native": "0.76.7",
     "react-native-gesture-handler": "^2.23.1",
     "react-native-paper": "^5.13.1",
+    "react-native-picker-select": "^9.3.1",
     "react-native-reanimated": "^3.16.7",
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.6.0",
     "react-native-vector-icons": "^10.2.0",
     "socket.io-client": "^4.8.1",
-    "expo-linear-gradient": "~14.0.2"
+    "react-dom": "18.3.1",
+    "react-native-web": "~0.19.13",
+    "@expo/metro-runtime": "~4.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

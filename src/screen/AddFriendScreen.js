@@ -1,8 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { View, FlatList, StyleSheet, Text, ActivityIndicator } from "react-native";
-import { Appbar, Button, Card, Paragraph, TextInput } from "react-native-paper";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+} from "react-native";
+import { Appbar, Button, Card, Paragraph, TextInput, Divider } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAllUsers, getPendingRequests, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendsList} from "../api/friendService";
+import {
+  getAllUsers,
+  getPendingRequests,
+  sendFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  getFriendsList,
+} from "../api/friendService";
 import { getUserProfile } from "../api/authService";
 
 const AddFriendScreen = ({ navigation }) => {
@@ -15,80 +30,78 @@ const AddFriendScreen = ({ navigation }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const fetchFriendsData = async () => {
+    const fetchData = async () => {
       try {
         const userProfile = await getUserProfile();
         setCurrentUser(userProfile);
 
-        const allUsers = await getAllUsers();
-        const pendingRequestsData = await getPendingRequests();
-        const friendsData = await getFriendsList();
+        const [allUsers, pendingRequestsData, friendsData] = await Promise.all([
+          getAllUsers(),
+          getPendingRequests(),
+          getFriendsList(),
+        ]);
 
         setUsers(allUsers);
         setPendingRequests(pendingRequestsData);
         setFriends(friendsData);
 
-        //  Load sent requests from AsyncStorage
         const storedRequests = await AsyncStorage.getItem("sentRequests");
         setSentRequests(storedRequests ? JSON.parse(storedRequests) : []);
       } catch (error) {
-        console.error("Error fetching friend data:", error);
+        console.error("❌ Error fetching data:", error);
+        Alert.alert("Error", "Failed to load friends data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFriendsData();
+    fetchData();
   }, []);
 
-  // Handle Friend Request and Save to AsyncStorage
-  const handleSendRequest = async (userId) => {
+  const handleSendRequest = useCallback(async (userId) => {
     if (userId === currentUser?._id) {
-      alert("You cannot send a friend request to yourself.");
+      Alert.alert("⚠️ Error", "You cannot send a friend request to yourself.");
       return;
     }
 
     try {
       await sendFriendRequest(userId);
       const updatedRequests = [...sentRequests, userId];
-      setSentRequests(updatedRequests); // Update UI state
-      await AsyncStorage.setItem("sentRequests", JSON.stringify(updatedRequests)); // Save to AsyncStorage
-      alert("Friend request sent!");
-    } catch (error) {
-      alert("Error sending request.");
-    }
-  };
+      setSentRequests(updatedRequests);
+      await AsyncStorage.setItem("sentRequests", JSON.stringify(updatedRequests));
 
-  // Handle Accept Friend Request
-  const handleAcceptRequest = async (requestId, senderId) => {
+      Alert.alert("✅ Success", "Friend request sent!");
+    } catch (error) {
+      Alert.alert("❌ Error", "Failed to send request.");
+    }
+  }, [currentUser, sentRequests]);
+
+  const handleAcceptRequest = useCallback(async (requestId, senderId) => {
     try {
       await acceptFriendRequest(requestId);
-      setPendingRequests(pendingRequests.filter((req) => req._id !== requestId));
-      setFriends([...friends, users.find((user) => user._id === senderId)]);
-      setUsers(users.filter((user) => user._id !== senderId));
+      setPendingRequests((prev) => prev.filter((req) => req._id !== requestId));
+      setFriends((prev) => [...prev, users.find((user) => user._id === senderId)]);
+      setUsers((prev) => prev.filter((user) => user._id !== senderId));
 
-      // Remove from sentRequests since it’s now a friend
       const updatedRequests = sentRequests.filter((id) => id !== senderId);
       setSentRequests(updatedRequests);
       await AsyncStorage.setItem("sentRequests", JSON.stringify(updatedRequests));
 
-      alert("Friend request accepted!");
+      Alert.alert("✅ Success", "Friend request accepted!");
     } catch (error) {
-      alert("Error accepting request.");
+      Alert.alert("❌ Error", "Failed to accept request.");
     }
-  };
+  }, [users, sentRequests]);
 
-  // Handle Reject Friend Request
-  const handleRejectRequest = async (requestId) => {
+  const handleRejectRequest = useCallback(async (requestId) => {
     try {
       await rejectFriendRequest(requestId);
-      alert("Friend request rejected!");
-      // Remove the rejected request from the list without refreshing the page
-      setPendingRequests((prevRequests) => prevRequests.filter((req) => req._id !== requestId));
+      setPendingRequests((prev) => prev.filter((req) => req._id !== requestId));
+      Alert.alert("✅ Success", "Friend request rejected.");
     } catch (error) {
-      alert(error.message || "Error rejecting request.");
+      Alert.alert("❌ Error", "Failed to reject request.");
     }
-  };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -98,10 +111,9 @@ const AddFriendScreen = ({ navigation }) => {
       </Appbar.Header>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#6200EE" />
+        <ActivityIndicator size="large" color="#6200EE" style={styles.loader} />
       ) : (
-        <>
-          {/* Search Users */}
+        <ScrollView>
           <TextInput
             label="Search Users"
             value={search}
@@ -109,7 +121,8 @@ const AddFriendScreen = ({ navigation }) => {
             style={styles.searchInput}
           />
 
-          {/* Friends List */}
+          <Divider style={styles.divider} />
+
           <Text style={styles.sectionTitle}>Your Friends</Text>
           {friends.length === 0 ? (
             <Text style={styles.noFriendsText}>No friends yet.</Text>
@@ -126,11 +139,13 @@ const AddFriendScreen = ({ navigation }) => {
                   </Card.Content>
                 </Card>
               )}
+              scrollEnabled={false}
             />
           )}
 
-          {/* Pending Friend Requests */}
-          <Text style={styles.sectionTitle}>Friends Requests</Text>
+          <Divider style={styles.divider} />
+
+          <Text style={styles.sectionTitle}>Pending Requests</Text>
           <FlatList
             data={pendingRequests}
             keyExtractor={(item) => item._id}
@@ -149,18 +164,18 @@ const AddFriendScreen = ({ navigation }) => {
                 </Card.Actions>
               </Card>
             )}
+            scrollEnabled={false}
           />
 
-          {/* Users List */}
+          <Divider style={styles.divider} />
+
           <Text style={styles.sectionTitle}>All Users</Text>
           <FlatList
             data={users.filter(
               (u) =>
-                `${u.first_name} ${u.last_name}`
-                  .toLowerCase()
-                  .includes(search.toLowerCase()) &&
+                `${u.first_name} ${u.last_name}`.toLowerCase().includes(search.toLowerCase()) &&
                 u._id !== currentUser?._id &&
-                !friends.some((friend) => friend._id === u._id) // Exclude friends
+                !friends.some((friend) => friend._id === u._id)
             )}
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
@@ -179,20 +194,23 @@ const AddFriendScreen = ({ navigation }) => {
                 </Card.Actions>
               </Card>
             )}
+            scrollEnabled={false}
           />
-        </>
+        </ScrollView>
       )}
     </View>
   );
 };
-
+ 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 10, backgroundColor: "#f4f4f4" },
   header: { backgroundColor: "#6200EE" },
+  loader: { marginTop: 50 },
   searchInput: { margin: 10 },
   sectionTitle: { fontSize: 18, fontWeight: "bold", marginVertical: 10 },
   friendCard: { marginVertical: 5, padding: 10, backgroundColor: "#FFF", elevation: 3 },
   noFriendsText: { textAlign: "center", fontSize: 16, marginVertical: 10, color: "gray" },
+  divider: { marginVertical: 10 },
 });
 
 export default AddFriendScreen;

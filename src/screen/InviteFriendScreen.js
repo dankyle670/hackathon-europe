@@ -1,6 +1,5 @@
-// src/screens/InviteFriendScreen.js
-import React, { useEffect, useState } from "react";
-import { View, FlatList, StyleSheet, Text, Button, ActivityIndicator, Alert } from "react-native";
+import React, { useEffect, useState, useCallback } from "react";
+import { View, FlatList, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import { getFriendsList } from "../api/friendService";
 import websocketService from "../api/websocketService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -11,51 +10,59 @@ const InviteFriendScreen = ({ navigation }) => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const fetchFriends = async () => {
-      const storedUserId = await AsyncStorage.getItem("userId");
+    const fetchUserAndFriends = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem("userId");
 
-      if (storedUserId) {
+        if (!storedUserId) {
+          throw new Error("User ID not found");
+        }
+
         setUserId(storedUserId);
-        websocketService.connect(storedUserId); // Connect with userId
-      } else {
-        console.error("⚠️ User ID not found in AsyncStorage");
-        Alert.alert("Error", "User ID not found. Please log in again.");
-      }
+        websocketService.connect(storedUserId); // Connexion WebSocket
 
-      const friendsData = await getFriendsList();
-      setFriends(friendsData);
-      setLoading(false);
+        const friendsData = await getFriendsList();
+        setFriends(friendsData);
+      } catch (error) {
+        console.error("❌ Error fetching friends:", error);
+        Alert.alert("Error", "Could not fetch friends. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchFriends();
+    fetchUserAndFriends();
   }, []);
 
-  const sendInvite = (friendId) => {
-    if (!userId) {
-      alert("⚠️ User ID not found. Please log in again.");
-      return;
-    }
+  const sendInvite = useCallback(
+    (friendId) => {
+      if (!userId) {
+        Alert.alert("⚠️ Error", "User ID not found. Please log in again.");
+        return;
+      }
 
-    console.log(`📤 Sending invite from ${userId} to ${friendId} for checkers`);
-    websocketService.sendGameInvite(userId, friendId, "checkers");
-    alert("🚀 Game invite sent!");
-  };
+      console.log(`📤 Sending invite from ${userId} to ${friendId} for checkers`);
+      websocketService.sendGameInvite(userId, friendId, "checkers");
+      Alert.alert("✅ Invite Sent", "Your friend has been invited to play!");
+    },
+    [userId]
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select a Friend to Play</Text>
+      <Text style={styles.title}>Invite a Friend to Play</Text>
       {loading ? (
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#007AFF" />
       ) : (
         <FlatList
           data={friends}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <Button
-              title={`Invite ${item.first_name}`}
-              onPress={() => sendInvite(item._id)}
-            />
+            <TouchableOpacity style={styles.inviteButton} onPress={() => sendInvite(item._id)}>
+              <Text style={styles.buttonText}>Invite {item.first_name}</Text>
+            </TouchableOpacity>
           )}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
     </View>
@@ -63,8 +70,17 @@ const InviteFriendScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 50 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 100 },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#121212" },
+  title: { fontSize: 24, fontWeight: "bold", color: "#fff", marginBottom: 20 },
+  inviteButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", fontSize: 18, fontWeight: "600" },
 });
 
 export default InviteFriendScreen;

@@ -4,8 +4,8 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const HomeScreen = ({ navigation }) => {
   return (
-    <LinearGradient colors={["#6a11cb", "#2575fc"]} style={styles.container}>
-      <Text style={styles.title}>Hackathon Europe</Text>
+    <LinearGradient colors={["#001E6C", "#0039A6"]} style={styles.container}>
+      <Text style={styles.title}>🇪🇺 Hackathon Europe</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
         <Text style={styles.buttonText}>Login</Text>
@@ -25,31 +25,39 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
   title: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 40,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    color: "#FFD700", // Doré pour rappeler les étoiles de l'UE
+    marginBottom: 50,
+    textAlign: "center",
+    textShadowColor: "rgba(255, 215, 0, 0.6)", // Effet doré lumineux
     textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
+    textShadowRadius: 8,
   },
   button: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.5)",
+    backgroundColor: "#0044CC",
+    paddingVertical: 14,
+    paddingHorizontal: 50,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "#FFD700",
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 10,
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
+    color: "#FFD700",
+    fontSize: 20,
+    fontWeight: "700",
+    textTransform: "uppercase",
   },
   spacer: {
-    height: 20,
+    height: 25,
   },
 });
 
