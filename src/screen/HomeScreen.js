@@ -1,44 +1,56 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from "react-native";
 
 const HomeScreen = ({ navigation }) => {
   return (
-    <LinearGradient colors={["#001E6C", "#0039A6"]} style={styles.container}>
-      <Text style={styles.title}>🇪🇺 Hackathon Europe</Text>
+    <ImageBackground 
+      source={{ uri: "https://culture.ec.europa.eu/sites/default/files/styles/eac_ratio_16_9_xl/public/2020-08/policies01-c_istock-kamisoka.jpg?h=c74750f6&itok=WPTcSWfi" }} 
+      style={styles.background}
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>🇪🇺 Hackathon Europe</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
 
-      <View style={styles.spacer} />
+        <View style={styles.spacer} />
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.buttonText}>Signup</Text>
-      </TouchableOpacity>
-    </LinearGradient>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Register")}>
+          <Text style={styles.buttonText}>Signup</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  overlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.6)", // Assombrit l'image pour améliorer la lisibilité
     padding: 20,
   },
   title: {
     fontSize: 34,
     fontWeight: "bold",
-    color: "#FFD700", // Doré pour rappeler les étoiles de l'UE
+    color: "#FFD700",
     marginBottom: 50,
     textAlign: "center",
-    textShadowColor: "rgba(255, 215, 0, 0.6)", // Effet doré lumineux
+    textShadowColor: "rgba(255, 215, 0, 0.8)", 
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 8,
   },
   button: {
-    backgroundColor: "#0044CC",
+    backgroundColor: "rgba(0, 68, 204, 0.8)", // Bleu semi-transparent
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 30,
